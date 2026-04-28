@@ -1,4 +1,4 @@
-import { Router }    from 'express';
+import { Router } from 'express';
 import { fetchLogs } from '../controllers/logsController.js';
 
 const router = Router();

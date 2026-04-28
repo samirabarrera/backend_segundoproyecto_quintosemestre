@@ -3,7 +3,30 @@ import { query } from '../config/basedatos.js';
 
 export const getNodes = async (req, res) => {
     try {
-        const result = await query('SELECT id, nombre, ubicacion FROM nodos');
+        const result = await query(`
+            SELECT
+              n.id,
+              n.nombre,
+              n.ubicacion,
+              n.version_fw,
+              CASE
+                WHEN ml.status_code = 200           THEN 'online'
+                WHEN ml.status_code IN (400, 500)   THEN 'alerta'
+                ELSE 'offline'
+              END AS estado,
+              ml.vatios_generados,
+              ml.voltaje,
+              ml.timestamp AS ultima_lectura
+            FROM nodos n
+            LEFT JOIN LATERAL (
+              SELECT status_code, vatios_generados, voltaje, timestamp
+              FROM metricas_log
+              WHERE nodo_id = n.id
+              ORDER BY timestamp DESC
+              LIMIT 1
+            ) ml ON true
+            ORDER BY n.nombre
+        `);
         res.json(result.rows);
     } catch (error) {
         console.error('Error obteniendo nodos:', error);

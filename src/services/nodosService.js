@@ -1,4 +1,4 @@
-import pool from '../config/basedatos.js';
+import pool from "../config/basedatos.js";
 
 /**
  *  - status_code 200  → 'online'
@@ -31,16 +31,11 @@ const getAllNodes = async () => {
        ORDER BY timestamp DESC
        LIMIT 1
      ) ml ON true
-     ORDER BY n.nombre`
+     ORDER BY n.nombre`,
   );
   return result.rows;
 };
 
-/**
- * Retorna la distribución de nodos por su estado actual.
- * Usado para la Gráfica de Dona.
- * @returns {Promise<Array<{ estado: string, cantidad: number }>>}
- */
 const getStatusDistribution = async () => {
   const result = await pool.query(
     `WITH ultimo_estado AS (
@@ -63,7 +58,7 @@ const getStatusDistribution = async () => {
      SELECT estado, COUNT(*)::int AS cantidad
      FROM ultimo_estado
      GROUP BY estado
-     ORDER BY estado`
+     ORDER BY estado`,
   );
   return result.rows;
 };
